@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 44 44% 95%;
+        --foreground: 84 24% 14%;
+        --card: 0 0% 100%;
+        --card-foreground: 84 24% 14%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 84 24% 14%;
+        --primary: 82 36% 27%;
+        --primary-foreground: 44 60% 96%;
+        --secondary: 44 36% 90%;
+        --secondary-foreground: 84 24% 18%;
+        --muted: 44 26% 90%;
+        --muted-foreground: 80 10% 42%;
+        --accent: 24 92% 46%;
+        --accent-foreground: 0 0% 100%;
+        --destructive: 4 72% 46%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 42 20% 84%;
+        --input: 42 20% 82%;
+        --ring: 24 92% 46%;
+        --radius: 0.75rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'Outfit', sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, .font-display {
+        font-family: 'Fraunces', serif;
+    }
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+    [data-debug-wrapper="true"] > * {
+        margin-left: inherit; margin-right: inherit; margin-top: inherit; margin-bottom: inherit;
+        padding-left: inherit; padding-right: inherit; padding-top: inherit; padding-bottom: inherit;
+        column-gap: inherit; row-gap: inherit; gap: inherit;
+        border-left-width: inherit; border-right-width: inherit; border-top-width: inherit; border-bottom-width: inherit;
+        border-left-style: inherit; border-right-style: inherit; border-top-style: inherit; border-bottom-style: inherit;
+        border-left-color: inherit; border-right-color: inherit; border-top-color: inherit; border-bottom-color: inherit;
+    }
+}
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+.status-pulse { animation: pulse-dot 1.6s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+.fade-in { animation: fadeIn 0.35s ease-out both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

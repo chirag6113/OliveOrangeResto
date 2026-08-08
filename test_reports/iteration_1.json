@@ -1,0 +1,37 @@
+{
+  "summary": "End-to-end testing of Café Smart Ordering & Management System. All 9 backend pytest cases passed and all 10 UI flows from the review request were verified. Customer flow (menu with 4 categories, add-with-addon, cart, place order with 5% GST), full order lifecycle (PLACED→ACCEPTED→PREPARING→READY→SERVED), reject-with-reason flow, order-more (multiple orders same session), full bill flow (request→lock→10% owner discount→cash payment→PAID→session closed→table AVAILABLE), cashier role-limited discount (percent 403, flat>100 403, flat<=100 OK), tables page (color-coded, Copy QR, Maintenance toggle blocks customer with 423), menu management (sold-out toggle greys item on customer side and removes Add button; add category+item), and WebSocket live update all working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Admin Tables page", "issues": ["When a table is toggled to MAINTENANCE while a session object still exists, the card continues to render 'Session: ACTIVE' and the 'Close session (no bill)' link under the MAINTENANCE badge (observed on T2). Cosmetic only; customer QR is correctly blocked (423)."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Optional polish: on Admin Tables page, hide the session summary block (or show 'Session paused') when table.status == MAINTENANCE, since the session shouldn't be visible/actionable during maintenance."
+  ],
+  "critical_code_review_comments": [
+    "server.py is 806 lines — consider splitting into routers (auth, public/customer, admin/orders, admin/billing, admin/menu, admin/tables) for maintainability.",
+    "Bill 'lock' endpoint used by UI is POST /api/admin/bills/{id}/lock, but there is also PATCH /api/admin/bills/{id} handling; frontend is consistent, just noting both paths exist.",
+    "Discount role-limit is enforced correctly server-side; frontend does not preemptively disable disallowed options for cashier — could show a hint but functional 403 handling is fine.",
+    "Customer TableApp: after order placement, tab auto-switches to 'orders' — this is correct UX; make sure error handling for failed place_order preserves cart (currently seems OK)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py (new pytest suite covering auth, dashboard, tables, cashier role-limited discount full flow, sold-out validation, maintenance 423, idempotency dedupe)"
+  ],
+  "success_rate": {"backend": "100% (9/9)", "frontend": "100% of the 10 review flows verified"},
+  "test_credentials": "Owner oliveorangetechnologies@gmail.com / Admin@123, Cashier cashier@cafe.com / Cashier@123 — as in /app/memory/test_credentials.md",
+  "seed_data_creation": "During testing, added Menu category 'TestCat-QA' with item 'TestItem-QA' (₹99). Also placed & completed several orders and bills (INV-0002 PAID). Cold Coffee was toggled off and back on. All seed state left in a consistent condition (Cold Coffee available again, Test items remain in DB but do not affect core flows).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend tests are in /app/backend/tests/backend_test.py — 9 cases, run via `pytest backend/tests/backend_test.py -v`. Tests cover role-limits, sold-out, maintenance (423), and idempotency. UI data-testids: customer uses add-{Name-with-hyphens}, confirm-add-{Name}, cart-bar, place-order-button, customer-tab-{menu|orders|bill}, request-bill-button, pay-{cash|upi|card}. Admin uses login-email/password/submit, nav-{live-orders|tables|menu|billing}, tab-{status_lowercase}, order-{no}-{accept|preparing|ready|served|reject|reject-reason|reject-confirm}, table-card-{Name}, maintenance-{Name}, copy-qr-{Name}, toggle-{Item-Name}, add-category-button, add-item-button, item-category select, bill-{bill_no}, lock-bill-button, discount-type (values: percent|flat), discount-value, apply-discount-button, payment-method (values: cash|upi|card lowercase!), payment-amount, record-payment-button, bill-paid-badge. staff token key in localStorage is 'staff_token', customer session key is 'cafe_session_{qr_token}'.",
+  "rca of the issue": "No blocking issues found. Only a small cosmetic quirk on the Admin Tables card in MAINTENANCE state (session block still rendered)."
+}
