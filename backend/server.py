@@ -716,10 +716,19 @@ async def root():
 
 app.include_router(api_router)
 
+# Keep the deployed frontend allowed even if the Render environment variable is
+# missing or contains whitespace around comma-separated origins.
+cors_origins = {
+    origin.strip().rstrip("/")
+    for origin in os.environ.get("CORS_ORIGINS", "").split(",")
+    if origin.strip() and origin.strip() != "*"
+}
+cors_origins.add("https://olive-orange-resto-ecru.vercel.app")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=sorted(cors_origins),
     allow_methods=["*"],
     allow_headers=["*"],
 )
