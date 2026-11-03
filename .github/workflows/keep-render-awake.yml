@@ -1,6 +1,9 @@
 name: Keep Render backend warm
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     # Run every five minutes, offset from the top of the hour to reduce delays.
     - cron: "2-59/5 * * * *"
